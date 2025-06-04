@@ -5,7 +5,6 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9 - JavaScript Error Handling</title>
-
   <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
     window.TrackJS && TrackJS.install({ 
@@ -110,7 +109,6 @@
   </main>
 
   <script>
-    // Step 2: Adding Button Functionality for Console Methods
     let form = document.querySelector('form');
     
     // Enhanced calculator with try/catch
@@ -243,9 +241,8 @@
       deep();
     });
 
-    // Step 3: Try/Catch/Finally and Throw Implementation
     
-    // Custom Error Classes
+    // Custom Error Classes (Step 4)
     class ValidationError extends Error {
       constructor(message) {
         super(message);
@@ -259,6 +256,59 @@
         this.name = 'CalculationError';
         this.operation = operation;
       }
+    }
+
+    // Advanced Custom Error Classes (like the article example)
+    class ReadError extends Error {
+      constructor(message, cause) {
+        super(message);
+        this.name = 'ReadError';
+        this.cause = cause;
+      }
+    }
+
+    class PropertyRequiredError extends ValidationError {
+      constructor(property) {
+        super(`Property "${property}" is required`);
+        this.name = 'PropertyRequiredError';
+        this.property = property;
+      }
+    }
+
+    // Functions that demonstrate error wrapping and re-throwing
+    function validateUser(user) {
+      if (!user.age) {
+        throw new PropertyRequiredError("age");
+      }
+      if (!user.name) {
+        throw new PropertyRequiredError("name");
+      }
+    }
+
+    function readUser(json) {
+      let user;
+      
+      try {
+        user = JSON.parse(json);
+      } catch (err) {
+        if (err instanceof SyntaxError) {
+          throw new ReadError("JSON Syntax Error", err);
+        } else {
+          throw err;
+        }
+      }
+      
+      try {
+        validateUser(user);
+      } catch (err) {
+        if (err instanceof ValidationError) {
+          throw new ReadError("User Validation Error", err);
+        } else {
+          throw err;
+        }
+      }
+      
+      return user;
     }
 
     // Global error handler
@@ -282,6 +332,62 @@
       return true; // Prevents default browser error handling
     };
 
+    // Enhanced error triggering with realistic scenarios
+    document.getElementById('trigger-error').addEventListener('click', () => {
+      const errorTypes = [
+        () => {
+          // Simulate accessing undefined property
+          let obj = null;
+          obj.someProperty; // This will throw TypeError
+        },
+        () => {
+          // Simulate validation error with custom error
+          throw new ValidationError('Username must be at least 8 characters long');
+        },
+        () => {
+          // Simulate calculation error with custom error
+          throw new CalculationError('Cannot divide by zero', 'division');
+        },
+        () => {
+          // Simulate DOM manipulation error
+          document.getElementById('non-existent-element').innerHTML = 'test';
+        },
+        () => {
+          // Simulate JSON parsing error
+          JSON.parse('{ invalid json }');
+        }
+      ];
+
+      // Randomly select an error type
+      const randomError = errorTypes[Math.floor(Math.random() * errorTypes.length)];
+      
+      try {
+        randomError();
+      } catch (error) {
+        console.log('Caught error in try/catch:');
+        console.log('Error name:', error.name);
+        console.log('Error message:', error.message);
+        
+        // Demonstrate custom error handling
+        if (error instanceof ValidationError) {
+          console.log('Handling ValidationError specifically');
+          console.log('This is a custom validation error');
+        } else if (error instanceof CalculationError) {
+          console.log('Handling CalculationError specifically');
+          console.log('Failed operation:', error.operation);
+          console.log('This is a custom calculation error');
+        } else if (error instanceof TypeError) {
+          console.log('Handling TypeError specifically');
+        } else if (error instanceof SyntaxError) {
+          console.log('Handling SyntaxError specifically');
+        } else {
+          console.log('Handling generic error');
+        }
+      } finally {
+        console.log('Finally block executed - cleanup completed');
+      }
+    });
+
     // Demonstrate unhandled promise rejection
     document.addEventListener('keydown', (e) => {
       if (e.key === 'p' && e.ctrlKey) {
@@ -298,9 +404,80 @@
       // event.preventDefault(); // Uncomment to prevent default handling
     });
 
-    console.log('JavaScript Error Handling Lab loaded successfully!');
-    console.log('Try the buttons above and watch the console output');
-    console.log('Press Ctrl+P to trigger an unhandled promise rejection');
+    const customErrorSection = document.createElement('section');
+    customErrorSection.innerHTML = `
+      <h3>Step 4: Custom Error Types</h3>
+      <button id="validation-error-btn">Simple ValidationError</button>
+      <button id="calculation-error-btn">CalculationError with Property</button>
+      <button id="nested-error-btn">Nested Error Chain</button>
+      <button id="json-error-btn">JSON ReadError Demo</button>
+      <button id="uncaught-error-btn">Uncaught Custom Error</button>
+    `;
+    customErrorSection.style.marginTop = '20px';
+    customErrorSection.style.padding = '15px';
+    customErrorSection.style.border = '1px solid #ddd';
+    customErrorSection.style.backgroundColor = '#f8f9fa';
+    document.querySelector('main').appendChild(customErrorSection);
+
+    // Simple Validation Error
+    document.getElementById('validation-error-btn').addEventListener('click', () => {
+      try {
+        throw new ValidationError('Username must be at least 8 characters long');
+      } catch (error) {
+        console.log('Caught:', error.name);
+        console.log('Message:', error.message);
+      }
+    });
+
+    // Calculation Error with custom property
+    document.getElementById('calculation-error-btn').addEventListener('click', () => {
+      try {
+        throw new CalculationError('Division by zero is not allowed', 'division');
+      } catch (error) {
+        console.log('Caught:', error.name);
+        console.log('Message:', error.message);
+        console.log('Operation:', error.operation);
+      }
+    });
+
+    // Nested error chain (like the article example)
+    document.getElementById('nested-error-btn').addEventListener('click', () => {
+      try {
+        try {
+          throw new PropertyRequiredError('email');
+        } catch (validationErr) {
+          throw new ReadError('User validation failed', validationErr);
+        }
+      } catch (error) {
+        console.log('Top level error:', error.name);
+        console.log('Message:', error.message);
+        console.log('Original cause:', error.cause.name);
+        console.log('Original message:', error.cause.message);
+        console.log('Missing property:', error.cause.property);
+      }
+    });
+
+    // JSON ReadError demonstration (like the article)
+    document.getElementById('json-error-btn').addEventListener('click', () => {
+      try {
+        readUser('{bad json}');
+      } catch (error) {
+        if (error instanceof ReadError) {
+          console.log('ReadError caught:', error.message);
+          console.log('Original error:', error.cause.name);
+          console.log('Original message:', error.cause.message);
+        } else {
+          console.log('Unexpected error:', error);
+        }
+      }
+    });
+
+    // Uncaught Error Demo (for global handler)
+    document.getElementById('uncaught-error-btn').addEventListener('click', () => {
+      setTimeout(() => {
+        throw new ValidationError('This is an uncaught custom error');
+      }, 100);
+    });
   </script>
 </body>
 </html>
