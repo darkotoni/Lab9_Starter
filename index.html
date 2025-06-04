@@ -7,25 +7,13 @@
   <title>Lab 9 - JavaScript Error Handling</title>
   
   <!-- TrackJS Error Tracking -->
-  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
-    window.TrackJS && TrackJS.install({
-      token: "879b7233bc4d4727999ec32d78c7c5b6"
-    });
-    
-    // Fallback mock TrackJS for local development
-    if (!window.TrackJS) {
-      console.warn('TrackJS CDN not available - using mock for demonstration');
-      window.TrackJS = {
-        track: function(message) {
-          console.log('📊 MOCK TrackJS - Would send to dashboard:', message);
-        },
-        install: function() {
-          console.log('📊 MOCK TrackJS - Agent installed');
-        }
-      };
-    }
+    window._trackJs = {
+      token: "879b7233bc4d4727999ec32d78c7c5b6",
+      application: "lab9-error-handling"
+    };
   </script>
+  <script src="https://cdn.trackjs.com/releases/current/tracker.js" crossorigin="anonymous"></script>
   
   <style>
     button {
@@ -452,14 +440,19 @@
     // TrackJS test button
     document.getElementById('trackjs-test-btn').addEventListener('click', () => {
       console.log('Checking TrackJS...');
-      console.log('window.TrackJS exists:', !!window.TrackJS);
       
-      if (window.TrackJS && window.TrackJS.track) {
+      // Check for different possible TrackJS objects
+      if (window.trackJs && window.trackJs.track) {
+        window.trackJs.track('Testing TrackJS from button click!');
+        console.log('Test message sent to TrackJS (trackJs)');
+      } else if (window.TrackJS && window.TrackJS.track) {
         window.TrackJS.track('Testing TrackJS from button click!');
-        console.log('Test message sent to TrackJS');
+        console.log('Test message sent to TrackJS (TrackJS)');
+      } else if (window._trackJs) {
+        console.log('TrackJS config found but API not available yet');
+        console.log('TrackJS should auto-capture errors though');
       } else {
-        console.log('TrackJS not properly loaded');
-        console.log('Available on window:', Object.keys(window).filter(key => key.toLowerCase().includes('track')));
+        console.log('TrackJS not loaded');
       }
     });
 
