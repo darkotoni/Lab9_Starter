@@ -227,7 +227,7 @@
       deep();
     });
 
-
+    // Step 3: Try/Catch/Finally and Throw Implementation
     
     // Custom Error Classes (Step 4)
     class ValidationError extends Error {
@@ -391,7 +391,120 @@
       // event.preventDefault(); // Uncomment to prevent default handling
     });
 
+    // Step 4: Custom Error Demonstration Buttons
+    const customErrorSection = document.createElement('section');
+    customErrorSection.innerHTML = `
+      <h3>Step 4: Custom Error Types</h3>
+      <button id="validation-error-btn">Simple ValidationError</button>
+      <button id="calculation-error-btn">CalculationError with Property</button>
+      <button id="nested-error-btn">Nested Error Chain</button>
+      <button id="json-error-btn">JSON ReadError Demo</button>
+      <button id="uncaught-error-btn">Uncaught Custom Error</button>
+    `;
+    customErrorSection.style.marginTop = '20px';
+    customErrorSection.style.padding = '15px';
+    customErrorSection.style.border = '1px solid #ddd';
+    customErrorSection.style.backgroundColor = '#f8f9fa';
+    document.querySelector('main').appendChild(customErrorSection);
 
+    // Step 5: TrackJS Testing Section
+    const trackjsSection = document.createElement('section');
+    trackjsSection.innerHTML = `
+      <h3>Step 5: TrackJS Testing</h3>
+      <button id="trackjs-test-btn">Test TrackJS Tracking</button>
+      <button id="trackjs-error-btn">Send Error to TrackJS</button>
+    `;
+    trackjsSection.style.marginTop = '20px';
+    trackjsSection.style.padding = '15px';
+    trackjsSection.style.border = '1px solid #ddd';
+    trackjsSection.style.backgroundColor = '#ffe8e8';
+    document.querySelector('main').appendChild(trackjsSection);
+
+    // TrackJS test button
+    document.getElementById('trackjs-test-btn').addEventListener('click', () => {
+      console.log('Checking TrackJS...');
+      
+      // Check for different possible TrackJS objects
+      if (window.trackJs && window.trackJs.track) {
+        window.trackJs.track('Testing TrackJS from button click!');
+        console.log('Test message sent to TrackJS (trackJs)');
+      } else if (window.TrackJS && window.TrackJS.track) {
+        window.TrackJS.track('Testing TrackJS from button click!');
+        console.log('Test message sent to TrackJS (TrackJS)');
+      } else if (window._trackJs) {
+        console.log('TrackJS config found but API not available yet');
+        console.log('TrackJS should auto-capture errors though');
+      } else {
+        console.log('TrackJS not loaded');
+      }
+    });
+
+    // TrackJS error button
+    document.getElementById('trackjs-error-btn').addEventListener('click', () => {
+      setTimeout(() => {
+        throw new Error('Test error for TrackJS dashboard');
+      }, 100);
+    });
+
+    // Simple Validation Error
+    document.getElementById('validation-error-btn').addEventListener('click', () => {
+      try {
+        throw new ValidationError('Username must be at least 8 characters long');
+      } catch (error) {
+        console.log('Caught:', error.name);
+        console.log('Message:', error.message);
+      }
+    });
+
+    // Calculation Error with custom property
+    document.getElementById('calculation-error-btn').addEventListener('click', () => {
+      try {
+        throw new CalculationError('Division by zero is not allowed', 'division');
+      } catch (error) {
+        console.log('Caught:', error.name);
+        console.log('Message:', error.message);
+        console.log('Operation:', error.operation);
+      }
+    });
+
+    // Nested error chain (like the article example)
+    document.getElementById('nested-error-btn').addEventListener('click', () => {
+      try {
+        try {
+          throw new PropertyRequiredError('email');
+        } catch (validationErr) {
+          throw new ReadError('User validation failed', validationErr);
+        }
+      } catch (error) {
+        console.log('Top level error:', error.name);
+        console.log('Message:', error.message);
+        console.log('Original cause:', error.cause.name);
+        console.log('Original message:', error.cause.message);
+        console.log('Missing property:', error.cause.property);
+      }
+    });
+
+    // JSON ReadError demonstration (like the article)
+    document.getElementById('json-error-btn').addEventListener('click', () => {
+      try {
+        readUser('{bad json}');
+      } catch (error) {
+        if (error instanceof ReadError) {
+          console.log('ReadError caught:', error.message);
+          console.log('Original error:', error.cause.name);
+          console.log('Original message:', error.cause.message);
+        } else {
+          console.log('Unexpected error:', error);
+        }
+      }
+    });
+
+    // Uncaught Error Demo (for global handler)
+    document.getElementById('uncaught-error-btn').addEventListener('click', () => {
+      setTimeout(() => {
+        throw new ValidationError('This is an uncaught custom error');
+      }, 100);
+    });
   </script>
 </body>
 </html>
