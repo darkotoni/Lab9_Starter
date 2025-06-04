@@ -7,13 +7,13 @@
   <title>Lab 9 - JavaScript Error Handling</title>
   
   <!-- TrackJS Error Tracking -->
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
-    window._trackJs = {
-      token: "879b7233bc4d4727999ec32d78c7c5b6",
-      application: "lab9-error-handling"
-    };
+    window.TrackJS && TrackJS.install({
+      token: "879b7233bc4d4727999ec32d78c7c5b6"
+      // for more configuration options, see https://docs.trackjs.com
+    });
   </script>
-  <script src="https://cdn.trackjs.com/releases/current/tracker.js" crossorigin="anonymous"></script>
   
   <style>
     button {
@@ -112,7 +112,6 @@
   </main>
 
   <script>
-    // Step 2: Adding Button Functionality for Console Methods
     let form = document.querySelector('form');
     
     // Enhanced calculator with try/catch
@@ -244,7 +243,7 @@
       deep();
     });
 
-    // Step 3: Try/Catch/Finally and Throw Implementation
+
     
     // Custom Error Classes (Step 4)
     class ValidationError extends Error {
@@ -405,10 +404,9 @@
       console.log('Unhandled Promise Rejection:');
       console.log('Reason:', event.reason);
       console.log('Promise:', event.promise);
-      // event.preventDefault(); // Uncomment to prevent default handling
     });
 
-    // Step 4: Custom Error Demonstration Buttons
+
     const customErrorSection = document.createElement('section');
     customErrorSection.innerHTML = `
       <h3>Step 4: Custom Error Types</h3>
@@ -423,45 +421,6 @@
     customErrorSection.style.border = '1px solid #ddd';
     customErrorSection.style.backgroundColor = '#f8f9fa';
     document.querySelector('main').appendChild(customErrorSection);
-
-    // Step 5: TrackJS Testing Section
-    const trackjsSection = document.createElement('section');
-    trackjsSection.innerHTML = `
-      <h3>Step 5: TrackJS Testing</h3>
-      <button id="trackjs-test-btn">Test TrackJS Tracking</button>
-      <button id="trackjs-error-btn">Send Error to TrackJS</button>
-    `;
-    trackjsSection.style.marginTop = '20px';
-    trackjsSection.style.padding = '15px';
-    trackjsSection.style.border = '1px solid #ddd';
-    trackjsSection.style.backgroundColor = '#ffe8e8';
-    document.querySelector('main').appendChild(trackjsSection);
-
-    // TrackJS test button
-    document.getElementById('trackjs-test-btn').addEventListener('click', () => {
-      console.log('Checking TrackJS...');
-      
-      // Check for different possible TrackJS objects
-      if (window.trackJs && window.trackJs.track) {
-        window.trackJs.track('Testing TrackJS from button click!');
-        console.log('Test message sent to TrackJS (trackJs)');
-      } else if (window.TrackJS && window.TrackJS.track) {
-        window.TrackJS.track('Testing TrackJS from button click!');
-        console.log('Test message sent to TrackJS (TrackJS)');
-      } else if (window._trackJs) {
-        console.log('TrackJS config found but API not available yet');
-        console.log('TrackJS should auto-capture errors though');
-      } else {
-        console.log('TrackJS not loaded');
-      }
-    });
-
-    // TrackJS error button
-    document.getElementById('trackjs-error-btn').addEventListener('click', () => {
-      setTimeout(() => {
-        throw new Error('Test error for TrackJS dashboard');
-      }, 100);
-    });
 
     // Simple Validation Error
     document.getElementById('validation-error-btn').addEventListener('click', () => {
