@@ -93,7 +93,6 @@
   </main>
 
   <script>
-    // Step 2: Adding Button Functionality for Console Methods
     let form = document.querySelector('form');
     
     // Enhanced calculator with try/catch
@@ -161,8 +160,7 @@
 
     document.getElementById('console-error').addEventListener('click', () => {
       console.error('Something went wrong');
-      // Legacy agent deprecated 2018-10-31
-      trackJs.track('Testing TrackJS!');
+    
     });
 
     document.getElementById('console-count').addEventListener('click', () => {
@@ -227,8 +225,16 @@
       deep();
     });
 
-    // Step 3: Try/Catch/Finally and Throw Implementation
-    
+      window.onerror = function(message, source, lineno, colno, error) {
+      console.log('Window.onerror triggered:');
+      console.log('Message:', message);
+      console.log('Source:', source);
+      console.log('Line:', lineno);
+      console.log('Column:', colno);
+      console.log('Error:', error);
+      return true; // Prevents default browser error handling
+    };
+
     // Custom Error Classes (Step 4)
     class ValidationError extends Error {
       constructor(message) {
@@ -245,7 +251,6 @@
       }
     }
 
-    // Advanced Custom Error Classes (like the article example)
     class ReadError extends Error {
       constructor(message, cause) {
         super(message);
@@ -262,62 +267,6 @@
       }
     }
 
-    // Functions that demonstrate error wrapping and re-throwing
-    function validateUser(user) {
-      if (!user.age) {
-        throw new PropertyRequiredError("age");
-      }
-      if (!user.name) {
-        throw new PropertyRequiredError("name");
-      }
-    }
-
-    function readUser(json) {
-      let user;
-      
-      try {
-        user = JSON.parse(json);
-      } catch (err) {
-        if (err instanceof SyntaxError) {
-          throw new ReadError("JSON Syntax Error", err);
-        } else {
-          throw err;
-        }
-      }
-      
-      try {
-        validateUser(user);
-      } catch (err) {
-        if (err instanceof ValidationError) {
-          throw new ReadError("User Validation Error", err);
-        } else {
-          throw err;
-        }
-      }
-      
-      return user;
-    }
-
-    // Global error handler
-    window.addEventListener('error', (event) => {
-      console.log('Global Error Caught:');
-      console.log('Message:', event.message);
-      console.log('Filename:', event.filename);
-      console.log('Line:', event.lineno);
-      console.log('Column:', event.colno);
-      console.log('Error object:', event.error);
-    });
-
-    // Alternative global error handler (older method)
-    window.onerror = function(message, source, lineno, colno, error) {
-      console.log('Window.onerror triggered:');
-      console.log('Message:', message);
-      console.log('Source:', source);
-      console.log('Line:', lineno);
-      console.log('Column:', colno);
-      console.log('Error:', error);
-      return true; // Prevents default browser error handling
-    };
 
     // Enhanced error triggering with realistic scenarios
     document.getElementById('trigger-error').addEventListener('click', () => {
