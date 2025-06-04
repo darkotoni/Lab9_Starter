@@ -6,14 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9 - JavaScript Error Handling</title>
   
-
-  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+  <!-- TrackJS Error Tracking -->
   <script>
-    window.TrackJS && TrackJS.install({ 
-      token: "879b7233bc4d4727999ec32d78c7c5b6"
-      // for more configuration options, see https://docs.trackjs.com
-    });
+    window._trackJs = {
+      token: "879b7233bc4d4727999ec32d78c7c5b6",
+      application: "lab9-error-handling"
+    };
   </script>
+  <script src="https://cdn.trackjs.com/releases/current/tracker.js" crossorigin="anonymous"></script>
   
   <style>
     button {
@@ -93,7 +93,7 @@
   </main>
 
   <script>
-
+    // Step 2: Adding Button Functionality for Console Methods
     let form = document.querySelector('form');
     
     // Enhanced calculator with try/catch
@@ -161,7 +161,8 @@
 
     document.getElementById('console-error').addEventListener('click', () => {
       console.error('Something went wrong');
-      TrackJS.track('Testing TrackJS!');
+      // Legacy agent deprecated 2018-10-31
+      trackJs.track('Testing TrackJS!');
     });
 
     document.getElementById('console-count').addEventListener('click', () => {
