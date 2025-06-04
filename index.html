@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lab 9 - JavaScript Error Handling</title>
   
-  <!-- TrackJS Error Tracking -->
+
   <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
-    window.TrackJS && TrackJS.install({
+    window.TrackJS && TrackJS.install({ 
       token: "879b7233bc4d4727999ec32d78c7c5b6"
       // for more configuration options, see https://docs.trackjs.com
     });
@@ -48,20 +48,8 @@
       padding: 8px 2px;
       width: 122px;
     }
-    #console-output {
-      margin-top: 20px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      background-color: #f9f9f9;
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .info-box {
-      margin-top: 15px;
-      padding: 10px;
-      background-color: #e8f4fd;
-      border-left: 4px solid #2196F3;
-    }
+
+
   </style>
 </head>
 <body>
@@ -83,9 +71,6 @@
       </fieldset>
     </form>
     
-    <div class="info-box">
-      <strong>Instructions:</strong> Open your browser's Developer Tools (F12) and go to the Console tab to see the output from the console method buttons below.
-    </div>
 
     <section id="error-btns">
       <button id="console-log">Console Log</button>
@@ -105,13 +90,10 @@
       <button id="trigger-error">Trigger a Global Error</button>
     </section>
 
-    <div id="console-output">
-      <h3>Console Output Info:</h3>
-      <p>Check your browser's console (F12 → Console) to see the actual output from the console methods.</p>
-    </div>
   </main>
 
   <script>
+
     let form = document.querySelector('form');
     
     // Enhanced calculator with try/catch
@@ -179,6 +161,7 @@
 
     document.getElementById('console-error').addEventListener('click', () => {
       console.error('Something went wrong');
+      TrackJS.track('Testing TrackJS!');
     });
 
     document.getElementById('console-count').addEventListener('click', () => {
@@ -404,83 +387,10 @@
       console.log('Unhandled Promise Rejection:');
       console.log('Reason:', event.reason);
       console.log('Promise:', event.promise);
+      // event.preventDefault(); // Uncomment to prevent default handling
     });
 
 
-    const customErrorSection = document.createElement('section');
-    customErrorSection.innerHTML = `
-      <h3>Step 4: Custom Error Types</h3>
-      <button id="validation-error-btn">Simple ValidationError</button>
-      <button id="calculation-error-btn">CalculationError with Property</button>
-      <button id="nested-error-btn">Nested Error Chain</button>
-      <button id="json-error-btn">JSON ReadError Demo</button>
-      <button id="uncaught-error-btn">Uncaught Custom Error</button>
-    `;
-    customErrorSection.style.marginTop = '20px';
-    customErrorSection.style.padding = '15px';
-    customErrorSection.style.border = '1px solid #ddd';
-    customErrorSection.style.backgroundColor = '#f8f9fa';
-    document.querySelector('main').appendChild(customErrorSection);
-
-    // Simple Validation Error
-    document.getElementById('validation-error-btn').addEventListener('click', () => {
-      try {
-        throw new ValidationError('Username must be at least 8 characters long');
-      } catch (error) {
-        console.log('Caught:', error.name);
-        console.log('Message:', error.message);
-      }
-    });
-
-    // Calculation Error with custom property
-    document.getElementById('calculation-error-btn').addEventListener('click', () => {
-      try {
-        throw new CalculationError('Division by zero is not allowed', 'division');
-      } catch (error) {
-        console.log('Caught:', error.name);
-        console.log('Message:', error.message);
-        console.log('Operation:', error.operation);
-      }
-    });
-
-    // Nested error chain (like the article example)
-    document.getElementById('nested-error-btn').addEventListener('click', () => {
-      try {
-        try {
-          throw new PropertyRequiredError('email');
-        } catch (validationErr) {
-          throw new ReadError('User validation failed', validationErr);
-        }
-      } catch (error) {
-        console.log('Top level error:', error.name);
-        console.log('Message:', error.message);
-        console.log('Original cause:', error.cause.name);
-        console.log('Original message:', error.cause.message);
-        console.log('Missing property:', error.cause.property);
-      }
-    });
-
-    // JSON ReadError demonstration (like the article)
-    document.getElementById('json-error-btn').addEventListener('click', () => {
-      try {
-        readUser('{bad json}');
-      } catch (error) {
-        if (error instanceof ReadError) {
-          console.log('ReadError caught:', error.message);
-          console.log('Original error:', error.cause.name);
-          console.log('Original message:', error.cause.message);
-        } else {
-          console.log('Unexpected error:', error);
-        }
-      }
-    });
-
-    // Uncaught Error Demo (for global handler)
-    document.getElementById('uncaught-error-btn').addEventListener('click', () => {
-      setTimeout(() => {
-        throw new ValidationError('This is an uncaught custom error');
-      }, 100);
-    });
   </script>
 </body>
 </html>
